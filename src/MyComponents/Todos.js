@@ -4,7 +4,7 @@ import TodoItem from "./TodoItem";
 const Todos = ({ todos, onDelete }) => {
   return (
     <div className="container">
-      <h3 className="text-center my-3">Todo List</h3>
+      <h3 className="my-3">Todo List</h3>
       {todos.length === 0 ? (
         <p>There is no item </p>
       ) : (

@@ -2,36 +2,54 @@ import "./App.css";
 import Header from "./MyComponents/Header";
 import Footer from "./MyComponents/Footer";
 import Todos from "./MyComponents/Todos";
-import React, { useState } from "react";
+import AddTodo from "./MyComponents/AddTodo";
+import About from "./MyComponents/About";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
-  // this is todo delete function
-  const onDelete = (todo) => {
-    console.log("i am delete of", todo);
-
-    setTodos(todos.filter((e)=>{
-      return e!==todo
-    }))
-
-    // deleting this way in react does not work
-    // let index = todos.indexOf(todo);
-    // todos.splice(index, 1);
+  // Get todos from localStorage
+  const getInitialTodos = () => {
+    const saved = localStorage.getItem("todos");
+    return saved ? JSON.parse(saved) : [];
   };
 
-  // here setTodos is a function which is use to update function
-  const [todos, setTodos] = useState([
-    { sno: 1, title: "go to the market", description: "you need to go market to done job1" },
-    { sno: 2, title: "go to the home", description: "you need to go market to done job2" },
-    { sno: 3, title: "go to the office", description: "you need to go market to done job2" },
-  ]);
+  const [todos, setTodos] = useState(getInitialTodos);
 
-  // return
+  // Save todos to localStorage on change
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+
+  // Add todo
+  const addTodo = (title, description) => {
+    const sno = todos.length > 0 ? todos[todos.length - 1].sno + 1 : 0;
+    const newTodo = { sno, title, description };
+    setTodos([...todos, newTodo]);
+  };
+
+  // Delete todo
+  const onDelete = (todo) => {
+    setTodos(todos.filter((e) => e !== todo));
+  };
+
   return (
-    <>
+    <Router>
       <Header />
-      <Todos todos={todos} onDelete={onDelete} />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <AddTodo addTodo={addTodo} />
+              <Todos todos={todos} onDelete={onDelete} />
+            </>
+          }
+        />
+        <Route path="/about" element={<About />} />
+      </Routes>
       <Footer />
-    </>
+    </Router>
   );
 }
 
